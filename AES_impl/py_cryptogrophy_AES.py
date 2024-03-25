@@ -1,4 +1,6 @@
 import os
+import time
+import timeit
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
@@ -31,12 +33,12 @@ def encrypt_message(message):
    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
 
    padded_message = padds_message(message)
-   print("Padded message:", padded_message)
-   print()
+   # print("Padded message:", padded_message)
+   # print()
    encryptor = cipher.encryptor()
    ct = encryptor.update(padded_message) + encryptor.finalize()
-   print("Cipher Text: ", ct)
-   print()
+   # print("Cipher Text: ", ct)
+   # print()
    return ct, iv
 
 def decrypt_message(ct, iv):
@@ -45,12 +47,28 @@ def decrypt_message(ct, iv):
 
    decryptor = cipher.decryptor()
    pt = decryptor.update(ct) + decryptor.finalize()
-   print("Plain text", pt)
-   print()
+   # print("Plain text", pt)
+   # print()
 
    decrypted_message = unpadds_message(pt)
-   print("Decrypted Message:", decrypted_message)
-   print()
+   # print("Decrypted Message:", decrypted_message)
+   # print()
+
+def benchmark():
+   acc_time = 0
+   iterations = 500
+
+   for x in range(10):
+      
+      for _ in range(iterations):
+         time_x1 = time.perf_counter()
+         encrypt_message(TEXT)
+         time_x2 = time.perf_counter()
+         acc_time += time_x2 - time_x1
+      tot_time = acc_time / iterations
+      print(f'{x}: Time taken for encrypting {iterations} times was {tot_time}')
+      acc_time = 0
 
 ct, iv = encrypt_message(TEXT)
 decrypt_message(ct, iv)
+benchmark()

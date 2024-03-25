@@ -1,8 +1,8 @@
 import os
 import time
 import timeit
-from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
 
 TEXT = "It's over, I have the high ground"
 
@@ -29,14 +29,40 @@ def load_pr_key():
 
 def load_pu_key():
     pu_pem = open("public_key.pem", "rb").read()
-    pu_key = serialization.load_pem_private_key(pu_pem, None)
+    pu_key = serialization.load_pem_public_key(pu_pem, None)
     return pu_key
 
-generate_keys()
+def encrypt_message(plaintext):
+    pu_key = load_pu_key()
+    ciphertext = pu_key.encrypt(
+        plaintext, 
+        padding.OAEP(
+            padding.MGF1(hashes.SHA256()), 
+            hashes.SHA256(), 
+            None
+        )  
+    )
+    return ciphertext
+
+def decrypt_message(ciphertext):
+    pr_key = load_pr_key()
+    plaintext = pr_key.decrypt(
+        ciphertext, 
+        padding.OAEP(
+            padding.MGF1(hashes.SHA256()), 
+            hashes.SHA256(), 
+            None
+        )
+    )
+    return plaintext
 
 
-# priv_k = load_pr_key
-# pr_pem = pr_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
+ct = encrypt_message(TEXT.encode())
+print("Encrypted message:", ct)
+pt = decrypt_message(ct)
+print("Decrypted message:", pt)
+print("ASCII of Decrypted message:", pt.decode())
 
-# print(pr_key)   
-# print(load_pu_key)
+
+
+

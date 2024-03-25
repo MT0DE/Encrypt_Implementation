@@ -76,18 +76,21 @@ def load_files_fifo():
 def benchmark():
    data = load_files_fifo()
    acc_time = 0
-   iterations = 250
+   iterations = 500
    text = ""
    print(f"Encrypting with AES128 {iterations} times")
    for _ in range(11):
       text = data.pop()
-      for _ in range(iterations):
+      size_of_text = sys.getsizeof(text)
+      curr_info = f' filesize {size_of_text} bytes'
+      for x in range(iterations):
+         print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
          time_x1 = time.perf_counter()
          encrypt_message(text)
          time_x2 = time.perf_counter()
          acc_time += time_x2 - time_x1
       tot_time = acc_time * 1000 / (iterations)
-      print(f'    filesize {sys.getsizeof(text)} bytes: {tot_time:.3f} ms')
+      print(f'    {tot_time:.3f} ms')
       acc_time = 0
 
 if os.access(os.path.join(os.curdir, "secret.key"), os.F_OK) is not True:

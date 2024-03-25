@@ -1,14 +1,14 @@
 import os
 import sys
 import time
-import timeit
+
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 
 TEXT = "It's over, I have the high ground"
 
-def generate_key():
-   key = os.urandom(32)
+def generate_128bitkey():
+   key = os.urandom(16)
    with open("secret.key", "wb") as key_file:
       key_file.write(key)
       print('key generated')
@@ -57,10 +57,11 @@ def decrypt_message(ct, iv):
 
 
 def load_files_fifo():
-   print(f"I am at {os.getcwd()}")
+   print("loading files into memory")
+   # print(f"I am at {os.getcwd()}")
    curr_dir = os.getcwd()
    os.chdir('../plaintext_files')
-   print(f"I am now at {os.getcwd()}")
+   # print(f"I am now at {os.getcwd()}")
 
    data_from_files = []
    for _, _, files in os.walk(os.getcwd()):
@@ -89,10 +90,11 @@ def benchmark():
       print(f'    filesize {sys.getsizeof(text)} bytes: {tot_time:.3f} ms')
       acc_time = 0
 
+if os.access(os.path.join(os.curdir, "secret.key"), os.F_OK) is not True:
+   print("generating new key...")
+   generate_128bitkey()
 
-   
 
-
-ct, iv = encrypt_message(TEXT)
-decrypt_message(ct, iv)
+# ct, iv = encrypt_message(TEXT)
+# decrypt_message(ct, iv)
 benchmark()

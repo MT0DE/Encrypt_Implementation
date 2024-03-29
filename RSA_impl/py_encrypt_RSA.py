@@ -62,7 +62,7 @@ def load_files_fifo():
    print("loading files into memory")
    # print(f"I am at {os.getcwd()}")
    curr_dir = os.getcwd()
-   os.chdir('../plaintext_files')
+   os.chdir('../AES_plaintext_files')
    # print(f"I am now at {os.getcwd()}")
 
    data_from_files = []

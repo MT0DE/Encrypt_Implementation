@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import timeit
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -32,7 +33,7 @@ def load_pu_key():
     pu_key = serialization.load_pem_public_key(pu_pem, None)
     return pu_key
 
-def encrypt_message(plaintext):
+def encrypt_message(plaintext: bytes) -> bytes:
     pu_key = load_pu_key()
     ciphertext = pu_key.encrypt(
         plaintext, 
@@ -56,13 +57,49 @@ def decrypt_message(ciphertext):
     )
     return plaintext
 
+def load_files_fifo():
+   print("loading files into memory")
+   # print(f"I am at {os.getcwd()}")
+   curr_dir = os.getcwd()
+   os.chdir('../plaintext_files')
+   # print(f"I am now at {os.getcwd()}")
 
-ct = encrypt_message(TEXT.encode())
-print("Encrypted message:", ct)
-pt = decrypt_message(ct)
-print("Decrypted message:", pt)
-print("ASCII of Decrypted message:", pt.decode())
+   data_from_files = []
+   for _, _, files in os.walk(os.getcwd()):
+      # print(files)
+      for filename in files:
+         # print(filename)
+         with open(os.path.join(os.curdir, filename), 'r') as df:
+            data_from_files.append(df.read().encode())
+   os.chdir(curr_dir)
+   return data_from_files
+
+def benchmark():
+   data = load_files_fifo()
+   acc_time = 0
+   iterations = 500
+   text: str = ""
+   print(f"Encrypting with RSA {iterations} times")
+   for _ in range(11):
+      text = data.pop()
+      size_of_text = sys.getsizeof(text)
+      for x in range(iterations):
+         print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
+         time_x1 = time.perf_counter()
+         encrypt_message(text.encode())
+         time_x2 = time.perf_counter()
+         acc_time += time_x2 - time_x1
+      tot_time = acc_time * 1000 / (iterations)
+      print(f'    {tot_time:.3f} ms')
+      acc_time = 0
 
 
+# ct = encrypt_message(TEXT.encode())
+# print("Encrypted message:", ct)
+# pt = decrypt_message(ct)
+# print("Decrypted message:", pt)
+# print("ASCII of Decrypted message:", pt.decode())
 
+
+benchmark()
 

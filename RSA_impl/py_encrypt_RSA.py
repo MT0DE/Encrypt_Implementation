@@ -8,17 +8,17 @@ from cryptography.hazmat.primitives import serialization, hashes
 TEXT = "It's over, I have the high ground"
 
 def generate_keys():
-    pr_key = rsa.generate_private_key(65537, 512) # Key size could also be tested for 4096
+    pr_key = rsa.generate_private_key(65537, 3072) # Key size could also be tested for 4096
     pr_pem = pr_key.private_bytes(serialization.Encoding.PEM, serialization.PrivateFormat.PKCS8, serialization.NoEncryption())
    
     pu_key = pr_key.public_key()
     pu_pem = pu_key.public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.PKCS1)
 
-    with open("512_private_key.pem", "wb") as key_file:
+    with open("3072_private_key.pem", "wb") as key_file:
         key_file.write(pr_pem)
         print('Private key generated')
 
-    with open("512_public_key.pem", "wb") as key_file:
+    with open("3072_public_key.pem", "wb") as key_file:
         key_file.write(pu_pem)
         print('Public key generated')
 
@@ -95,12 +95,7 @@ def benchmark():
       acc_time = 0
 
 
-# ct = encrypt_message(TEXT.encode())
-# print("Encrypted message:", ct)
-# pt = decrypt_message(ct)
-# print("Decrypted message:", pt)
-# print("ASCII of Decrypted message:", pt.decode())
 
-generate_keys()
-# benchmark()
+#generate_keys()
+benchmark()
 

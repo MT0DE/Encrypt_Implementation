@@ -20,7 +20,7 @@ func generate_key_and_save_to(filename string){
 	//reads random bytes into byte_arr
 	read_bytes, err := rand.Read(byte_arr)
 	if read_bytes != len(byte_arr){
-		fmt.Println("Not enough bytes were read\nSpecific issue: ", err)
+		fmt.Println("KeyGeneratorLog: Not enough bytes were read\nSpecific issue: ", err)
 		os.Exit(1)
 	}
 	fmt.Println("KeyGeneratorLog: Generated", KEY_SIZE_IN_BYTES, "cryptographically secure bytes")
@@ -28,9 +28,9 @@ func generate_key_and_save_to(filename string){
 	//create file and write the key to it
 	//from https://stackoverflow.com/questions/12518876/how-to-check-if-a-file-exists-in-go
 	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist){
-		fmt.Println("File does not exist, but will be created")
+		fmt.Println("KeyGeneratorLog: File does not exist, but will be created")
 	}else{
-		fmt.Println("Files exist, but its contents will be truncated/removed")
+		fmt.Println("KeyGeneratorLog: Files exist, but its contents will be truncated/removed")
 	}
 	outputfile, err := os.Create(filename)
 	if(err != nil){
@@ -47,9 +47,8 @@ func generate_key_and_save_to(filename string){
 	defer writer.Flush()
 	bytes_written, err := writer.Write(byte_arr)
 	if err != nil{
-		fmt.Println(err, "\nOnly", bytes_written, "were written to file")
+		fmt.Println("KeyGeneratorLog: ",err,"\nOnly", bytes_written, "were written to file")
 	}
-	fmt.Println("Buffer has", writer.Buffered(), "inside of it")
 	fmt.Printf("KeyGeneratorLog: \"%s\" was succesfully created and wrote %d bytes\n", filename, bytes_written)
 }
 

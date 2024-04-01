@@ -34,11 +34,11 @@ def load_pu_key():
     pu_key = serialization.load_pem_public_key(pu_pem, None)
     return pu_key
 
-def encrypt_message(plaintext: str, key: rsa.RSAPrivateKey):
-    plaintext_bytes = plaintext.encode()
+# def encrypt_message(plaintext_bytes: bytes):
+def encrypt_message(plaintext: bytes):
     pu_key = load_pu_key()
     ciphertext = pu_key.encrypt(
-        plaintext_bytes, 
+        plaintext, 
         padding.OAEP(
             padding.MGF1(hashes.SHA256()), 
             hashes.SHA256(), 
@@ -47,7 +47,7 @@ def encrypt_message(plaintext: str, key: rsa.RSAPrivateKey):
     )
     return ciphertext
 
-def decrypt_message(ciphertext: str, key: rsa.RSAPrivateKey):
+def decrypt_message(ciphertext: bytes):
     pr_key = load_pr_key()
     plaintext = pr_key.decrypt(
         ciphertext, 
@@ -82,43 +82,22 @@ def load_files_fifo():
    os.chdir(curr_dir)
    return data_from_files
 
-def load_keys_fifo():
-    print("loading key_files into memory")
-    keys = []
-    pr_pem = open("1024_private_key.pem", "rb").read()
-    pr_key_1024 = serialization.load_pem_private_key(pr_pem, None)
-    keys.append(pr_key_1024)
-
-    pr_pem = open("2048_private_key.pem", "rb").read()
-    pr_key_1024 = serialization.load_pem_private_key(pr_pem, None)
-    keys.append(pr_key_1024)
-
-    pr_pem = open("3072_private_key.pem", "rb").read()
-    pr_key_1024 = serialization.load_pem_private_key(pr_pem, None)
-    keys.append(pr_key_1024)
-
-    pr_pem = open("4096_private_key.pem", "rb").read()
-    pr_key_1024 = serialization.load_pem_private_key(pr_pem, None)
-    keys.append(pr_key_1024)
-
-    return keys
-
 
 def benchmark():
     data = load_files_fifo()
-    keys = load_keys_fifo()
+    data.sort(key=sys.getsizeof, reverse=True)
+
     acc_time = 0
     iterations = 500
-    text: str = ""
     print(f"Encrypting with RSA {iterations} times")
     for _ in range(4):
-        text = data.pop()
-        key = rsa.RSAPrivateKey(keys.pop())
-        size_of_text = sys.getsizeof(text)
+        full_text = bytes(data.pop())
+        size_of_text = sys.getsizeof(full_text)
+        
         for x in range(iterations):
-            print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
+            print("\r" + f'   [{x+1}] filesize {size_of_text} bytes, key-size of 4096 bit', end='')
             time_x1 = time.perf_counter()
-            encrypt_message(text)
+            encrypt_message(full_text)
             time_x2 = time.perf_counter()
             acc_time += time_x2 - time_x1
         tot_time = acc_time * 1000 / (iterations)

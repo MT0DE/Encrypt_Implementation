@@ -75,6 +75,7 @@ def load_files_fifo():
 
 def benchmark():
    data = load_files_fifo()
+   data.sort(key=sys.getsizeof, reverse=True)
    acc_time = 0
    iterations = 500
    text = ""
@@ -82,7 +83,6 @@ def benchmark():
    for _ in range(11):
       text = data.pop()
       size_of_text = sys.getsizeof(text)
-      curr_info = f' filesize {size_of_text} bytes'
       for x in range(iterations):
          print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
          time_x1 = time.perf_counter()

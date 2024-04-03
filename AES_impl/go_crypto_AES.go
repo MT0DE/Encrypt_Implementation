@@ -60,6 +60,8 @@ func generate_key_and_save_to(filename string){
 }
 
 func get_plaintext_files() [][]byte {
+	fmt.Println("loading files into memory...")
+
 	curr_dir, err := os.Getwd()
 	if err != nil{
 		fmt.Println(err)
@@ -94,6 +96,7 @@ func get_plaintext_files() [][]byte {
 }
 
 func load_key(file string) []byte{
+	fmt.Println("loading key into memory...")
 	key, err := os.ReadFile(file)
 	if errors.Is(err, fs.ErrExist){
 		fmt.Println(err)
@@ -171,7 +174,7 @@ func benchmark(files_to_encrypt [][]byte, key []byte){
 	iterations := 500.0
 	acc_time := 0.0
 	var text_as_byte []byte
-	fmt.Println("Encrypting with AES128 {iterations} times")
+	fmt.Printf("Encrypting with AES128 %d times\n", int(iterations))
 	for file_index := 0; 0 < len(files_to_encrypt); file_index++{
 		text_as_byte = files_to_encrypt[file_index]
 		size_of_text := len(text_as_byte)

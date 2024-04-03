@@ -16,15 +16,15 @@ def generate_128bitkey():
 def load_key():
    return open("secret.key", "rb").read() 
 
-def padds_message(message):
+def padds_message(message: str):
    padder = padding.PKCS7(128).padder()
    padded_data = padder.update(message.encode())
    padded_data += padder.finalize()
    return padded_data
 
-def unpadds_message(message):
+def unpadds_message(message: str):
    unpadder = padding.PKCS7(128).unpadder()
-   unpadded_data = unpadder.update(message)
+   unpadded_data = unpadder.update(message.encode())
    unpadded_data += unpadder.finalize()
    return unpadded_data
 
@@ -79,9 +79,9 @@ def benchmark():
    iterations = 500
    text = ""
    print(f"Encrypting with AES128 {iterations} times")
-   for _ in range(11):
+   for _ in range(len(data)):
       text = data.pop()
-      size_of_text = sys.getsizeof(text)
+      size_of_text = len(bytes(text, "utf-8"))
       for x in range(iterations):
          print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
          time_x1 = time.perf_counter()

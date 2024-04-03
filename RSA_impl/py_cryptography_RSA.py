@@ -86,14 +86,13 @@ def load_files_fifo():
 def benchmark():
     data = load_files_fifo()
     data.sort(key=sys.getsizeof, reverse=True)
-
     acc_time = 0
     iterations = 500
+    text = ""
     print(f"Encrypting with RSA {iterations} times")
-    for _ in range(4):
+    for _ in range(len(data)):
         full_text = bytes(data.pop())
-        size_of_text = sys.getsizeof(full_text)
-        
+        size_of_text = len(bytes(text, "utf-8"))
         for x in range(iterations):
             print("\r" + f'   [{x+1}] filesize {size_of_text} bytes, key-size of 4096 bit', end='')
             time_x1 = time.perf_counter()

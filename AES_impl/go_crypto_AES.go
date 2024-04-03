@@ -1,12 +1,14 @@
 package main
 
 import (
-	"bytes"
-	"errors"
-	// "crypto/aes"
 	"bufio"
+	"sort"
+	// "crypto/aes"
 	"crypto/rand"
+	"errors"
 	"fmt"
+
+	// "io"
 	"os"
 )
 
@@ -52,12 +54,65 @@ func generate_key_and_save_to(filename string){
 	fmt.Printf("KeyGeneratorLog: \"%s\" was succesfully created and wrote %d bytes\n", filename, bytes_written)
 }
 
-func encrypt(text bytes.Buffer){
+func get_plaintext_files() [][]byte {
+	curr_dir, err := os.Getwd()
+	if err != nil{
+		fmt.Println(err)
+	}
+	defer os.Chdir(curr_dir)
+
+	//Change directory and save the path
+	plain_text_path := "../plaintext_files/AES"
+	os.Chdir(plain_text_path)
+	new_curr_dir, b_err := os.Getwd()
+	if b_err != nil{
+		fmt.Println(err)
+	}
+	
+	files, err := os.ReadDir("./")
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	plain_text := make([][]byte, 0)
+	for _, file := range files{
+
+		file_byte, err := os.ReadFile(new_curr_dir + "\\" + file.Name())
+
+		if err != nil{
+			fmt.Println(err)
+		}else{
+			plain_text = append(plain_text, file_byte)
+		}
+	}
+	return plain_text
+}
+
+func load_key(file string) []byte{
+	key, err := os.ReadFile(file)
+	if err != nil{
+		print(err)
+	}
+	return key
+}
+
+func encrypt(text []byte){
 	
 }
 
 func main() {
 	filename := "secret.key"
-	generate_key_and_save_to(filename)
+	// generate_key_and_save_to(filename)
+
+	//array of bytes
+	plaintext_files := get_plaintext_files()
+
+	//load key
+	key := load_key(filename)
+	stringify_key := string(key)
+	fmt.Printf("key in utf-8: %s\n", stringify_key)
 	
+	sort.Slice(plaintext_files, func(i, j int) bool {
+		return len(plaintext_files[i]) < len(plaintext_files[j]) 
+	})
 }

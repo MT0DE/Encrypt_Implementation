@@ -1,20 +1,18 @@
 package main
 
 import (
-	// "bytes"
-	// "errors"
-	// "crypto/rsa"
-	// "bufio"
-	// "crypto/rand"
-	//"crypto/cipher"
+	"sort"
+	"time"
+	"fmt"
+	"os"
+
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
-	"os"
 )
+
 
 // LoadPrivate loads an (unencrypted) RSA private key from PEM data
 func load_pr_key(filepath string) *rsa.PrivateKey {
@@ -51,18 +49,83 @@ func decrypt_message(ciphertext []byte, pr_key *rsa.PrivateKey) []byte {
 	return plaintext
 }
 
-func main() {
+func get_plaintext_files() [][]byte {
+	curr_dir, err := os.Getwd()
+	if err != nil{
+		fmt.Println(err)
+	}
+	defer os.Chdir(curr_dir)
 
+	//Change directory and save the path
+	plain_text_path := "../plaintext_files/RSA"
+	os.Chdir(plain_text_path)
+	new_curr_dir, b_err := os.Getwd()
+	if b_err != nil{
+		fmt.Println(err)
+	}
+	
+	files, err := os.ReadDir("./")
+	if err != nil{
+		fmt.Println(err)
+	}
+
+	plain_text := make([][]byte, 0)
+	for _, file := range files{
+
+		file_byte, err := os.ReadFile(new_curr_dir + "\\" + file.Name())
+
+		if err != nil{
+			fmt.Println(err)
+		}else{
+			plain_text = append(plain_text, file_byte)
+		}
+	}
+	return plain_text
+}
+
+func benchmark(){
+	//array of bytes
+	plaintext_files := get_plaintext_files()
+	sort.Slice(plaintext_files, func(i, j int) bool {
+		return len(plaintext_files[i]) < len(plaintext_files[j]) 
+	})
+	//load key
 	pr_key := load_pr_key("4096_private_key.pem")
 	pu_key := pr_key.PublicKey
 
-	plaintext := "hello"
-	ciphertext := encrypt_message([]byte(plaintext), &pu_key)
-	result := decrypt_message(ciphertext, pr_key)
+	iterations := 500.0
+	acc_time := 0.0
+	var text_as_byte []byte
+	fmt.Printf("Encrypting with RSA %d times\n", int(iterations))
+	for file_index := 0; file_index < len(plaintext_files); file_index++{
+		text_as_byte = plaintext_files[file_index]
+		size_of_text := len(text_as_byte)
+		for i := 0; i < int(iterations); i++ {
+			fmt.Printf("\r [%d] filesize %d bytes", i+1, size_of_text)
+			start := time.Now()
+			encrypt_message(text_as_byte, &pu_key)
+			end := time.Now()
 
-	fmt.Printf("plaintext: %s\n", plaintext)
+			acc_time += float64(end.Sub(start).Nanoseconds())
+		}
+		tot_time := (acc_time) / (iterations*1000000)
+		fmt.Printf("	%.3fms\n", tot_time)
+		acc_time = 0
+	}
+}
 
-	fmt.Printf("ciphertext: %b\n", ciphertext)
-	fmt.Printf("result: %s\n", result)
+func main() {
+	benchmark()
+	// pr_key := load_pr_key("4096_private_key.pem")
+	// pu_key := pr_key.PublicKey
+
+	// plaintext := "hello"
+	// ciphertext := encrypt_message([]byte(plaintext), &pu_key)
+	// result := decrypt_message(ciphertext, pr_key)
+
+	// fmt.Printf("plaintext: %s\n", plaintext)
+
+	// fmt.Printf("ciphertext: %b\n", ciphertext)
+	// fmt.Printf("result: %s\n", result)
 
 }

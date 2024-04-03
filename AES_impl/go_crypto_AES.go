@@ -175,7 +175,7 @@ func benchmark(files_to_encrypt [][]byte, key []byte){
 	acc_time := 0.0
 	var text_as_byte []byte
 	fmt.Printf("Encrypting with AES128 %d times\n", int(iterations))
-	for file_index := 0; 0 < len(files_to_encrypt); file_index++{
+	for file_index := 0; file_index < len(files_to_encrypt); file_index++{
 		text_as_byte = files_to_encrypt[file_index]
 		size_of_text := len(text_as_byte)
 		for i := 0; i < int(iterations); i++ {

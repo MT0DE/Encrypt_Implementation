@@ -28,8 +28,7 @@ def unpadds_message(message):
    unpadded_data += unpadder.finalize()
    return unpadded_data
 
-def encrypt_message(message):
-   key = load_key()
+def encrypt_message(message, key):
    iv = os.urandom(16)
    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
 
@@ -42,8 +41,7 @@ def encrypt_message(message):
    # print()
    return ct, iv
 
-def decrypt_message(ct, iv):
-   key = load_key()
+def decrypt_message(ct, iv, key):
    cipher = Cipher(algorithms.AES(key), modes.CBC(iv))
 
    decryptor = cipher.decryptor()
@@ -75,6 +73,7 @@ def load_files_fifo():
 
 def benchmark():
    data = load_files_fifo()
+   key = load_key()
    data.sort(key=sys.getsizeof, reverse=True)
    acc_time = 0
    iterations = 500
@@ -86,7 +85,7 @@ def benchmark():
       for x in range(iterations):
          print("\r" + f'   [{x+1}] filesize {size_of_text} bytes', end='')
          time_x1 = time.perf_counter()
-         encrypt_message(text)
+         encrypt_message(text, key)
          time_x2 = time.perf_counter()
          acc_time += time_x2 - time_x1
       tot_time = acc_time * 1000 / (iterations)

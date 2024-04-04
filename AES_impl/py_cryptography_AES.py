@@ -22,11 +22,11 @@ def padds_message(message: str):
    padded_data += padder.finalize()
    return padded_data
 
-def unpadds_message(message: str):
+def unpadds_message(message: bytes):
    unpadder = padding.PKCS7(128).unpadder()
-   unpadded_data = unpadder.update(message.encode())
+   unpadded_data = unpadder.update(message)
    unpadded_data += unpadder.finalize()
-   return unpadded_data
+   return unpadded_data.decode()
 
 def encrypt_message(message, key):
    iv = os.urandom(16)
@@ -52,6 +52,7 @@ def decrypt_message(ct, iv, key):
    decrypted_message = unpadds_message(pt)
    # print("Decrypted Message:", decrypted_message)
    # print()
+   return decrypted_message
 
 
 def load_files_fifo():
@@ -99,4 +100,10 @@ if os.access(os.path.join(os.curdir, "secret.key"), os.F_OK) is not True:
 
 # ct, iv = encrypt_message(TEXT)
 # decrypt_message(ct, iv)
-benchmark()
+# benchmark()
+
+key = load_key()
+cipher, iv = encrypt_message(TEXT, key)
+plaintext = decrypt_message(cipher, iv, key)
+
+print(plaintext)

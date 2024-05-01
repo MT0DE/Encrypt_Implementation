@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"io/fs"
+	"path"
 	"sort"
 
 	"crypto/aes"
@@ -11,10 +12,10 @@ import (
 	"errors"
 	"fmt"
 
+	"encoding/hex"
 	"io"
 	"os"
 	"time"
-	"encoding/hex"
 )
 
 //key size: 128bit
@@ -84,7 +85,7 @@ func get_plaintext_files() [][]byte {
 	plain_text := make([][]byte, 0)
 	for _, file := range files{
 
-		file_byte, err := os.ReadFile(new_curr_dir + "\\" + file.Name())
+		file_byte, err := os.ReadFile(path.Join(new_curr_dir, file.Name()))
 
 		if err != nil{
 			fmt.Println(err)

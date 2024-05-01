@@ -1,10 +1,11 @@
 package main
 
 import (
-	"sort"
-	"time"
 	"fmt"
 	"os"
+	"path"
+	"sort"
+	"time"
 
 	"crypto/rand"
 	"crypto/rsa"
@@ -12,7 +13,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 )
-
 
 // LoadPrivate loads an (unencrypted) RSA private key from PEM data
 func load_pr_key(filepath string) *rsa.PrivateKey {
@@ -72,7 +72,7 @@ func get_plaintext_files() [][]byte {
 	plain_text := make([][]byte, 0)
 	for _, file := range files{
 
-		file_byte, err := os.ReadFile(new_curr_dir + "\\" + file.Name())
+		file_byte, err := os.ReadFile(path.Join(new_curr_dir, file.Name()))
 
 		if err != nil{
 			fmt.Println(err)

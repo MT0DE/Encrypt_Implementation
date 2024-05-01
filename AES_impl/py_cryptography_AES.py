@@ -100,10 +100,10 @@ if os.access(os.path.join(os.curdir, "secret.key"), os.F_OK) is not True:
 
 # ct, iv = encrypt_message(TEXT)
 # decrypt_message(ct, iv)
-# benchmark()
+benchmark()
 
-key = load_key()
-cipher, iv = encrypt_message(TEXT, key)
-plaintext = decrypt_message(cipher, iv, key)
+# key = load_key()
+# cipher, iv = encrypt_message(TEXT, key)
+# plaintext = decrypt_message(cipher, iv, key)
 
-print(plaintext)
+# print(plaintext)

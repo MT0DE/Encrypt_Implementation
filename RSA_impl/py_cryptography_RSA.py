@@ -66,14 +66,13 @@ def load_files_fifo():
    # Save current directory and change to select directory
    curr_dir = os.getcwd()
    os.chdir('../plaintext_files/RSA')
-   # print(f"I am now at {os.getcwd()}")
+   print(f"I am now at {os.getcwd()}")
 
    data_from_files = []
    
    #Select all .txt files    
    txtfiles = [f for f in glob.glob("*.txt")]
    for filename in txtfiles:
-        # print(filename)
         # Open the file as binary file and read all of its content
         with open(os.path.join(os.curdir, filename), 'rb') as df:
             data_from_files.append(df.read())
@@ -92,11 +91,10 @@ def benchmark():
 
     acc_time = 0
     iterations = 500
-    text = ""
     print(f"Encrypting with RSA {iterations} times")
     for _ in range(len(data)):
         full_text = bytes(data.pop())
-        size_of_text = len(bytes(text, "utf-8"))
+        size_of_text = len(full_text)
         for x in range(iterations):
             print("\r" + f'   [{x+1}] filesize {size_of_text} bytes, key-size of 4096 bit', end='')
             time_x1 = time.perf_counter()

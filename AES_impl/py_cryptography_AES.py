@@ -14,6 +14,7 @@ def generate_128bitkey():
       print('key generated')
 
 def load_key():
+   print("loading key into memory")
    return open("secret.key", "rb").read() 
 
 def padds_message(message: str):
